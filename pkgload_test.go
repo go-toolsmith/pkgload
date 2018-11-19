@@ -3,7 +3,9 @@ package pkgload
 import (
 	"errors"
 	"fmt"
+	"go/build"
 	"go/token"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -62,9 +64,44 @@ func TestVisitUnits(t *testing.T) {
 		testsMap["_"+absPath] = tests[i].desc
 	}
 
-	t.Run("loadAll", func(t *testing.T) {
-		cfg := packages.Config{Mode: packages.LoadSyntax, Tests: true, Fset: token.NewFileSet()}
-		pkgs, err := packages.Load(&cfg, paths...)
+	runWithMode := func(name string, mode packages.LoadMode, fn func(*packages.Config, *testing.T)) {
+		t.Run(name, func(t *testing.T) {
+			cfg := packages.Config{Mode: mode, Tests: true, Fset: token.NewFileSet()}
+			fn(&cfg, t)
+		})
+	}
+	runWithAllModes := func(name string, fn func(*packages.Config, *testing.T)) {
+		runWithMode(name+"/Files", packages.LoadFiles, fn)
+		runWithMode(name+"/LoadImports", packages.LoadImports, fn)
+		runWithMode(name+"/LoadTypes", packages.LoadTypes, fn)
+		runWithMode(name+"/LoadSyntax", packages.LoadSyntax, fn)
+	}
+
+	// Check that loading GOROOT packages does not cause
+	// VisitUnits to panic.
+	runWithAllModes("loadStd", func(cfg *packages.Config, t *testing.T) {
+		goroot := build.Default.GOROOT
+		wd, err := os.Getwd()
+		if err != nil {
+			t.Skipf("can't get wd: %v", err)
+		}
+		defer func(prev string) {
+			if err := os.Chdir(prev); err != nil {
+				panic(fmt.Sprintf("can't go back: %v", err))
+			}
+		}(wd)
+		if err := os.Chdir(goroot); err != nil {
+			t.Skipf("chdir: %v", err)
+		}
+		pkgs, err := packages.Load(cfg, "./src/...")
+		if err != nil {
+			t.Fatalf("load packages: %v", err)
+		}
+		VisitUnits(pkgs, func(u *Unit) {})
+	})
+
+	runWithAllModes("loadAll", func(cfg *packages.Config, t *testing.T) {
+		pkgs, err := packages.Load(cfg, paths...)
 		if err != nil {
 			t.Fatalf("load packages: %v", err)
 		}
@@ -85,10 +122,9 @@ func TestVisitUnits(t *testing.T) {
 		}
 	})
 
-	t.Run("loadOneByOne", func(t *testing.T) {
-		cfg := packages.Config{Mode: packages.LoadSyntax, Tests: true, Fset: token.NewFileSet()}
+	runWithAllModes("loadOneByOne", func(cfg *packages.Config, t *testing.T) {
 		for _, path := range paths {
-			pkgs, err := packages.Load(&cfg, path)
+			pkgs, err := packages.Load(cfg, path)
 			if err != nil {
 				t.Fatalf("load packages: %v", err)
 			}

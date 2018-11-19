@@ -2,6 +2,7 @@
 package pkgload
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -26,12 +27,47 @@ type Unit struct {
 	TestBinary *packages.Package
 }
 
+// Deduplicate returns a copy of pkgs slice where all duplicated
+// package entries are removed.
+//
+// Packages are considered equal if all conditions below are satisfied:
+//	- Same ID
+//	- Same Name
+//	- Same PkgPath
+//	- Equal GoFiles
+func Deduplicate(pkgs []*packages.Package) []*packages.Package {
+	type pkgKey struct {
+		id    string
+		name  string
+		path  string
+		files string
+	}
+
+	pkgSet := make(map[pkgKey]*packages.Package)
+	for _, pkg := range pkgs {
+		key := pkgKey{
+			id:    pkg.ID,
+			name:  pkg.Name,
+			path:  pkg.PkgPath,
+			files: strings.Join(pkg.GoFiles, ";"),
+		}
+		pkgSet[key] = pkg
+	}
+
+	list := make([]*packages.Package, 0, len(pkgSet))
+	for _, pkg := range pkgSet {
+		list = append(list, pkg)
+	}
+	return list
+}
+
 // VisitUnits traverses potentially unsorted pkgs list as a set of units.
 // All related packages from the slice are passed into visit func as a single unit.
 // Units are visited in a sorted order (import path).
 //
 // All packages in a slice must be non-nil.
 func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
+	pkgs = Deduplicate(pkgs)
 	units := make(map[string]*Unit)
 
 	internUnit := func(key string) *Unit {
@@ -47,7 +83,8 @@ func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
 	// Panic should never trigger if this library is correct.
 	mustBeNil := func(pkg *packages.Package) {
 		if pkg != nil {
-			panic("nil assertion failed")
+			panic(fmt.Sprintf("nil assertion failed for ID=%q Path=%q",
+				pkg.ID, pkg.PkgPath))
 		}
 	}
 
