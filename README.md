@@ -19,9 +19,8 @@ package main
 
 import (
 	"fmt"
-	"go/token"
-
 	"github.com/go-toolsmith/pkgload"
+	"go/token"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -32,20 +31,18 @@ func main() {
 		Tests: true,
 		Fset:  fset,
 	}
-
 	patterns := []string{"mypackage"}
 	pkgs, err := packages.Load(cfg, patterns...)
 	if err != nil {
 		return nil, err
 	}
-
 	result := pkgs[:0]
-
 	pkgload.VisitUnits(pkgs, func(u *pkgload.Unit) {
 		if u.ExternalTest != nil {
 			result = append(result, u.ExternalTest)
 		}
-    result = append(result, u.Base)
+		result = append(result, u.Base)
 	})
 }
+
 ```
