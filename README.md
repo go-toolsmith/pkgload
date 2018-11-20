@@ -19,8 +19,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-toolsmith/pkgload"
 	"go/token"
+
+	"github.com/go-toolsmith/pkgload"
 	"golang.org/x/tools/go/packages"
 )
 
