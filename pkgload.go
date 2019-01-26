@@ -10,8 +10,12 @@ import (
 )
 
 // Unit is a set of packages that form a logical group.
+// It is guaranteed that at least 1 field of this object is non-nil.
 type Unit struct {
 	// Base is a standard (normal) package.
+	//
+	// Note: it can be nil for packages that only have external
+	// tests, for example.
 	Base *packages.Package
 
 	// Test is a package compiled for test.
@@ -25,6 +29,31 @@ type Unit struct {
 	// TestBinary is a test binary.
 	// Non-nil if Test or ExternalTest are present.
 	TestBinary *packages.Package
+}
+
+// NonNil returns first non-nil field (package) of the unit.
+//
+//	1. If Base is not nil, return Base.
+//	2. If Test is not nil, return Test.
+//	3. If ExternalTest is not nil, return ExternalTest.
+//	4. Otherwise return TestBinary.
+//
+// If all unit fields are nil, method panics.
+// This should never happen for properly-loaded units.
+func (u *Unit) NonNil() *packages.Package {
+	if u.Base != nil {
+		return u.Base
+	}
+	if u.Test != nil {
+		return u.Test
+	}
+	if u.ExternalTest != nil {
+		return u.ExternalTest
+	}
+	if u.TestBinary != nil {
+		return u.TestBinary
+	}
+	panic("all unit fields are nil")
 }
 
 // Deduplicate returns a copy of pkgs slice where all duplicated
@@ -122,7 +151,7 @@ func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
 		unitList = append(unitList, u)
 	}
 	sort.Slice(unitList, func(i, j int) bool {
-		return unitList[i].Base.PkgPath < unitList[j].Base.PkgPath
+		return unitList[i].NonNil().PkgPath < unitList[j].NonNil().PkgPath
 	})
 	for _, u := range unitList {
 		visit(u)

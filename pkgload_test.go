@@ -30,6 +30,7 @@ func TestVisitUnits(t *testing.T) {
 		{"./testdata/horrors/base-only/blah_test", "Base"},
 		{"./testdata/horrors/base-with-tests/blah.test", "Base+Test+TestBinary"},
 		{"./testdata/horrors/base-with-tests/blah_test", "Base+Test+TestBinary"},
+		{"./testdata/horrors/test_data", "ExternalTest"},
 	}
 
 	checkFields := func(desc string, u *Unit) error {
@@ -112,14 +113,14 @@ func TestVisitUnits(t *testing.T) {
 		}
 		remains := len(testsMap) - 1 // Substract the empty unit
 		VisitUnits(pkgs, func(u *Unit) {
-			desc, ok := testsMap[u.Base.PkgPath]
+			desc, ok := testsMap[u.NonNil().PkgPath]
 			if !ok {
-				t.Fatalf("unmatched pkg path %q", u.Base.PkgPath)
+				t.Fatalf("unmatched pkg path %q", u.NonNil().PkgPath)
 			}
 			remains--
 			if err := checkFields(desc, u); err != nil {
 				t.Errorf("%q: check %q: %v",
-					u.Base.PkgPath, desc, err)
+					u.NonNil().PkgPath, desc, err)
 			}
 		})
 		if remains != 0 {
@@ -134,13 +135,13 @@ func TestVisitUnits(t *testing.T) {
 				t.Fatalf("load packages: %v", err)
 			}
 			VisitUnits(pkgs, func(u *Unit) {
-				desc, ok := testsMap[u.Base.PkgPath]
+				desc, ok := testsMap[u.NonNil().PkgPath]
 				if !ok {
-					t.Fatalf("unmatched pkg path %q", u.Base.PkgPath)
+					t.Fatalf("unmatched pkg path %q", u.NonNil().PkgPath)
 				}
 				if err := checkFields(desc, u); err != nil {
 					t.Errorf("%q: check %q: %v",
-						u.Base.PkgPath, desc, err)
+						u.NonNil().PkgPath, desc, err)
 				}
 			})
 		}
