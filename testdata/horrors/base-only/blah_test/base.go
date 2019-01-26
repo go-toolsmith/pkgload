@@ -1,0 +1,3 @@
+package blah
+
+func F() {}

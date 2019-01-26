@@ -25,6 +25,11 @@ func TestVisitUnits(t *testing.T) {
 		{"./testdata/empty", ""},
 		{"./testdata/main_only", "Base"},
 		{"./testdata/main_with_tests", "Base+Test+TestBinary"},
+
+		{"./testdata/horrors/base-only/blah.test", "Base"},
+		{"./testdata/horrors/base-only/blah_test", "Base"},
+		{"./testdata/horrors/base-with-tests/blah.test", "Base+Test+TestBinary"},
+		{"./testdata/horrors/base-with-tests/blah_test", "Base+Test+TestBinary"},
 	}
 
 	checkFields := func(desc string, u *Unit) error {
