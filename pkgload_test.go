@@ -135,13 +135,13 @@ func TestVisitUnits(t *testing.T) {
 				t.Fatalf("load packages: %v", err)
 			}
 			VisitUnits(pkgs, func(u *Unit) {
-				desc, ok := testsMap[u.Base.PkgPath]
+				desc, ok := testsMap[u.NonNil().PkgPath]
 				if !ok {
-					t.Fatalf("unmatched pkg path %q", u.Base.PkgPath)
+					t.Fatalf("unmatched pkg path %q", u.NonNil().PkgPath)
 				}
 				if err := checkFields(desc, u); err != nil {
 					t.Errorf("%q: check %q: %v",
-						u.Base.PkgPath, desc, err)
+						u.NonNil().PkgPath, desc, err)
 				}
 			})
 		}
