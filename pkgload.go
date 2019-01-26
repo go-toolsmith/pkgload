@@ -94,7 +94,7 @@ func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
 
 	for _, pkg := range pkgs {
 		switch {
-		case strings.HasSuffix(pkg.PkgPath, "_test"):
+		case strings.HasSuffix(pkg.Name, "_test"):
 			key := withoutSuffix(pkg.PkgPath, "_test")
 			u := internUnit(key)
 			mustBeNil(u.ExternalTest)
@@ -103,7 +103,7 @@ func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
 			u := internUnit(pkg.PkgPath)
 			mustBeNil(u.Test)
 			u.Test = pkg
-		case pkg.Name == "main" && strings.HasSuffix(pkg.PkgPath, ".test"):
+		case pkg.Name == "main" && strings.HasSuffix(pkg.ID, ".test"):
 			key := withoutSuffix(pkg.PkgPath, ".text")
 			u := internUnit(key)
 			mustBeNil(u.TestBinary)
