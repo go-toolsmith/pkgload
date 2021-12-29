@@ -41,19 +41,18 @@ type Unit struct {
 // If all unit fields are nil, method panics.
 // This should never happen for properly-loaded units.
 func (u *Unit) NonNil() *packages.Package {
-	if u.Base != nil {
+	switch {
+	case u.Base != nil:
 		return u.Base
-	}
-	if u.Test != nil {
+	case u.Test != nil:
 		return u.Test
-	}
-	if u.ExternalTest != nil {
+	case u.ExternalTest != nil:
 		return u.ExternalTest
-	}
-	if u.TestBinary != nil {
+	case u.TestBinary != nil:
 		return u.TestBinary
+	default:
+		panic("all unit fields are nil")
 	}
-	panic("all unit fields are nil")
 }
 
 // Deduplicate returns a copy of pkgs slice where all duplicated
@@ -72,7 +71,7 @@ func Deduplicate(pkgs []*packages.Package) []*packages.Package {
 		files string
 	}
 
-	pkgSet := make(map[pkgKey]*packages.Package)
+	pkgSet := make(map[pkgKey]*packages.Package, len(pkgs))
 	for _, pkg := range pkgs {
 		key := pkgKey{
 			id:    pkg.ID,

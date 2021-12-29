@@ -111,7 +111,7 @@ func TestVisitUnits(t *testing.T) {
 		if err != nil {
 			t.Fatalf("load packages: %v", err)
 		}
-		remains := len(testsMap) - 1 // Substract the empty unit
+		remains := len(testsMap) - 1 // Subtract the empty unit
 		VisitUnits(pkgs, func(u *Unit) {
 			desc, ok := testsMap[u.NonNil().PkgPath]
 			if !ok {
