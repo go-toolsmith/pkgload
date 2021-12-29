@@ -1,6 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-toolsmith/pkgload)](https://goreportcard.com/report/github.com/go-toolsmith/pkgload)
-[![GoDoc](https://godoc.org/github.com/go-toolsmith/pkgload?status.svg)](https://godoc.org/github.com/go-toolsmith/pkgload)
-[![Build Status](https://travis-ci.org/go-toolsmith/pkgload.svg?branch=master)](https://travis-ci.org/go-toolsmith/pkgload)
+[![GoDoc]([pkg-img]: https://pkg.go.dev/badge/go-toolsmith/pkgload)](https://pkg.go.dev/github.com/go-toolsmith/pkgload)
+[![Build Status](https://github.com/go-toolsmith/pkgload/workflows/build/badge.svg)](https://github.com/go-toolsmith/pkgload/actions)
 
 # pkgload
 
@@ -22,6 +22,7 @@ import (
 	"go/token"
 
 	"github.com/go-toolsmith/pkgload"
+
 	"golang.org/x/tools/go/packages"
 )
 
@@ -45,5 +46,8 @@ func main() {
 		result = append(result, u.Base)
 	})
 }
-
 ```
+
+## License
+
+[MIT License](LICENSE).
