@@ -2,4 +2,4 @@ package allincluded
 
 import "testing"
 
-func Test(t *testing.T) {}
+func TestSimple(t *testing.T) {}

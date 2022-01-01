@@ -59,15 +59,26 @@ func TestVisitUnits(t *testing.T) {
 		return nil
 	}
 
+	type testPackage struct {
+		filePath string
+		pkgPath  string
+		desc     string
+	}
+
 	paths := make([]string, len(tests))
-	testsMap := make(map[string]string)
-	for i := range tests {
+	testsMap := make(map[string]testPackage)
+	for i, test := range tests {
+		pkgPath := "github.com/go-toolsmith/pkgload/" + strings.TrimPrefix(test.path, "./")
 		paths[i] = tests[i].path
 		absPath, err := filepath.Abs(tests[i].path)
 		if err != nil {
 			t.Fatalf("get abs path: %v", err)
 		}
-		testsMap["_"+absPath] = tests[i].desc
+		testsMap[pkgPath] = testPackage{
+			filePath: absPath,
+			pkgPath:  pkgPath,
+			desc:     test.desc,
+		}
 	}
 
 	runWithMode := func(name string, mode packages.LoadMode, fn func(*packages.Config, *testing.T)) {
@@ -113,14 +124,14 @@ func TestVisitUnits(t *testing.T) {
 		}
 		remains := len(testsMap) - 1 // Substract the empty unit
 		VisitUnits(pkgs, func(u *Unit) {
-			desc, ok := testsMap[u.NonNil().PkgPath]
+			p, ok := testsMap[u.NonNil().PkgPath]
 			if !ok {
 				t.Fatalf("unmatched pkg path %q", u.NonNil().PkgPath)
 			}
 			remains--
-			if err := checkFields(desc, u); err != nil {
+			if err := checkFields(p.desc, u); err != nil {
 				t.Errorf("%q: check %q: %v",
-					u.NonNil().PkgPath, desc, err)
+					u.NonNil().PkgPath, p.desc, err)
 			}
 		})
 		if remains != 0 {
@@ -135,13 +146,13 @@ func TestVisitUnits(t *testing.T) {
 				t.Fatalf("load packages: %v", err)
 			}
 			VisitUnits(pkgs, func(u *Unit) {
-				desc, ok := testsMap[u.NonNil().PkgPath]
+				p, ok := testsMap[u.NonNil().PkgPath]
 				if !ok {
 					t.Fatalf("unmatched pkg path %q", u.NonNil().PkgPath)
 				}
-				if err := checkFields(desc, u); err != nil {
+				if err := checkFields(p.desc, u); err != nil {
 					t.Errorf("%q: check %q: %v",
-						u.NonNil().PkgPath, desc, err)
+						u.NonNil().PkgPath, p.desc, err)
 				}
 			})
 		}
