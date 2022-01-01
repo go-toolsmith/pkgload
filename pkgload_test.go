@@ -110,7 +110,7 @@ func TestVisitUnits(t *testing.T) {
 		if err := os.Chdir(goroot); err != nil {
 			t.Skipf("chdir: %v", err)
 		}
-		pkgs, err := packages.Load(cfg, "./src/...")
+		pkgs, err := packages.Load(cfg, "std")
 		if err != nil {
 			t.Fatalf("load packages: %v", err)
 		}
