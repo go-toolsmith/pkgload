@@ -33,10 +33,10 @@ type Unit struct {
 
 // NonNil returns first non-nil field (package) of the unit.
 //
-//	1. If Base is not nil, return Base.
-//	2. If Test is not nil, return Test.
-//	3. If ExternalTest is not nil, return ExternalTest.
-//	4. Otherwise return TestBinary.
+//  1. If Base is not nil, return Base.
+//  2. If Test is not nil, return Test.
+//  3. If ExternalTest is not nil, return ExternalTest.
+//  4. Otherwise return TestBinary.
 //
 // If all unit fields are nil, method panics.
 // This should never happen for properly-loaded units.
@@ -60,10 +60,10 @@ func (u *Unit) NonNil() *packages.Package {
 // package entries are removed.
 //
 // Packages are considered equal if all conditions below are satisfied:
-//	- Same ID
-//	- Same Name
-//	- Same PkgPath
-//	- Equal GoFiles
+//   - Same ID
+//   - Same Name
+//   - Same PkgPath
+//   - Equal GoFiles
 func Deduplicate(pkgs []*packages.Package) []*packages.Package {
 	type pkgKey struct {
 		id    string
