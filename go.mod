@@ -2,10 +2,9 @@ module github.com/go-toolsmith/pkgload
 
 go 1.17
 
-require golang.org/x/tools v0.1.9-0.20211228192929-ee1ca4ffc4da
+require golang.org/x/tools v0.5.0
 
 require (
-	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/mod v0.7.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 )
