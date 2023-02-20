@@ -41,19 +41,46 @@ type Unit struct {
 // If all unit fields are nil, method panics.
 // This should never happen for properly-loaded units.
 func (u *Unit) NonNil() *packages.Package {
-	if u.Base != nil {
+	switch {
+	case u.Base != nil:
 		return u.Base
-	}
-	if u.Test != nil {
+	case u.Test != nil:
 		return u.Test
-	}
-	if u.ExternalTest != nil {
+	case u.ExternalTest != nil:
 		return u.ExternalTest
-	}
-	if u.TestBinary != nil {
+	case u.TestBinary != nil:
 		return u.TestBinary
+	default:
+		panic("all Unit fields are nil")
 	}
-	panic("all unit fields are nil")
+}
+
+// LoadPackages with a given config and patterns.
+func LoadPackages(cfg *packages.Config, patterns []string) ([]*packages.Package, error) {
+	pkgs, err := packages.Load(cfg, patterns...)
+	if err != nil {
+		return nil, err
+	}
+
+	result := pkgs[:0]
+	VisitUnits(pkgs, func(u *Unit) {
+		if u.ExternalTest != nil {
+			result = append(result, u.ExternalTest)
+		}
+
+		switch {
+		// Prefer tests to the base package, if present.
+		case u.Test != nil:
+			result = append(result, u.Test)
+		case u.Base != nil:
+			result = append(result, u.Base)
+		}
+	})
+
+	sort.SliceStable(pkgs, func(i, j int) bool {
+		return pkgs[i].PkgPath < pkgs[j].PkgPath
+	})
+	return result, nil
 }
 
 // Deduplicate returns a copy of pkgs slice where all duplicated
@@ -74,6 +101,7 @@ func Deduplicate(pkgs []*packages.Package) []*packages.Package {
 
 	pkgSet := make(map[pkgKey]*packages.Package)
 	for _, pkg := range pkgs {
+		sort.Strings(pkg.GoFiles)
 		key := pkgKey{
 			id:    pkg.ID,
 			name:  pkg.Name,
@@ -150,7 +178,7 @@ func VisitUnits(pkgs []*packages.Package, visit func(*Unit)) {
 	for _, u := range units {
 		unitList = append(unitList, u)
 	}
-	sort.Slice(unitList, func(i, j int) bool {
+	sort.SliceStable(unitList, func(i, j int) bool {
 		return unitList[i].NonNil().PkgPath < unitList[j].NonNil().PkgPath
 	})
 	for _, u := range unitList {
