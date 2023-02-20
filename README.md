@@ -30,24 +30,23 @@ import (
 
 func main() {
 	fset := token.NewFileSet()
-	cfg := packages.Config{
+	cfg := &packages.Config{
 		Mode:  packages.LoadSyntax,
 		Tests: true,
 		Fset:  fset,
 	}
 
 	patterns := []string{"mypackage"}
-	pkgs, err := packages.Load(cfg, patterns...)
+	pkgs, err := pkgload.LoadPackages(cfg, patterns)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	result := pkgs[:0]
+	pkgs = pkgload.Deduplicate(pkgs)
+
 	pkgload.VisitUnits(pkgs, func(u *pkgload.Unit) {
-		if u.ExternalTest != nil {
-			result = append(result, u.ExternalTest)
-		}
-		result = append(result, u.Base)
+		pkgPath := u.NonNil().PkgPath
+		println(pkgPath)
 	})
 }
 ```
