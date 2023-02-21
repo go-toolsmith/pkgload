@@ -77,8 +77,8 @@ func LoadPackages(cfg *packages.Config, patterns []string) ([]*packages.Package,
 		}
 	})
 
-	sort.SliceStable(pkgs, func(i, j int) bool {
-		return pkgs[i].PkgPath < pkgs[j].PkgPath
+	sort.SliceStable(result, func(i, j int) bool {
+		return result[i].PkgPath < result[j].PkgPath
 	})
 	return result, nil
 }
