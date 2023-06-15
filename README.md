@@ -55,11 +55,11 @@ func main() {
 
 [MIT License](LICENSE).
 
-[build-img]: https://github.com/go-toolsmith/astp/workflows/build/badge.svg
-[build-url]: https://github.com/go-toolsmith/astp/actions
-[pkg-img]: https://pkg.go.dev/badge/go-toolsmith/astp
-[pkg-url]: https://pkg.go.dev/github.com/go-toolsmith/astp
-[reportcard-img]: https://goreportcard.com/badge/go-toolsmith/astp
-[reportcard-url]: https://goreportcard.com/report/go-toolsmith/astp
-[version-img]: https://img.shields.io/github/v/release/go-toolsmith/astp
-[version-url]: https://github.com/go-toolsmith/astp/releases
+[build-img]: https://github.com/go-toolsmith/pkgload/workflows/build/badge.svg
+[build-url]: https://github.com/go-toolsmith/pkgload/actions
+[pkg-img]: https://pkg.go.dev/badge/go-toolsmith/pkgload
+[pkg-url]: https://pkg.go.dev/github.com/go-toolsmith/pkgload
+[reportcard-img]: https://goreportcard.com/badge/go-toolsmith/pkgload
+[reportcard-url]: https://goreportcard.com/report/go-toolsmith/pkgload
+[version-img]: https://img.shields.io/github/v/release/go-toolsmith/pkgload
+[version-url]: https://github.com/go-toolsmith/pkgload/releases
